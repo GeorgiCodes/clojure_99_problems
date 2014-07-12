@@ -72,21 +72,20 @@
 ;; problem 7
 ;; Flatten a nested list structure.
 ;; Transform a list, possibly holding lists as elements into a `flat' list by replacing each list with its elements (recursively).
-;; HELP!
-(defn is-list [coll]
-  (= (type '(1 2 3)) clojure.lang.PersistentList))
-
-(is-list '(1 2 3))
-
 (defn flatten-me [xs]
   (loop [[head & tail :as all] xs
-         result nil]
+         result []]
+
     (if (empty? all)
       result
-      (if (is-list head)
-        (recur tail (conj result head)))))
+      (if (seq? head)
+        (recur tail (concat result (flatten-me head)))
+        (recur tail (conj result head))))))
 
-(flatten-me '(a (b (c d) e)))
+(flatten-me '(a (b (c d) e) d))
+(flatten-me '(a (b c) d))
+;; (a b c d e d)
+;; need to add to end of list
 
 ;; add each value to new list, if head is list, then recursively add .values
 
@@ -99,8 +98,27 @@
 ;; (A B C A D E)
 
 (defn remove-duplicates [xs]
-  )
+  (loop [[head & tail :as all] xs
+         result []]
+    (if (empty? all)
+      result
+      (do
+        (if (not= head (first tail))
+          (do
+            (println result)
+            (recur tail (conj result head)))
+          (recur tail result))))))
 
-(remove-duplicates '(a a a a b c c a a d e e e e))
+(remove-duplicates '("a" "a" "a" "a" "b" "c" "c" "a" "a" "d" "e" "e" "e" "e"))
 
 
+;; need head and first of tail if not same add head.
+  ;; if same, keep looping, only add when not same
+
+
+;; problem 9
+;; Pack consecutive duplicates of list elements into sublists.
+;; If a list contains repeated elements they should be placed in separate sublists.
+;; Example:
+;; * (pack '(a a a a b c c a a d e e e e))
+;; ((A A A A) (B) (C C) (A A) (D) (E E E E))
