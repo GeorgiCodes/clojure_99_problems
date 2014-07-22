@@ -134,9 +134,30 @@
       result
       (do
         (if (= head (first tail))
-          (do (println sublist)
-            (recur tail result (conj sublist head)))
+          (recur tail result (conj sublist head))
           (recur tail (conj result (conj sublist head)) []))
+        ))))
 
-          ))))
+(pack-consecutives '(a a a a b c c a a d e e e e f))
 
+;; problem 10
+;; (*) Run-length encoding of a list.
+;; Use the result of problem P09 to implement the so-called run-length encoding data compression method.
+;; Consecutive duplicates of elements are encoded as lists (N E) where N is the number of duplicates of the element E.
+;; Example:
+;; * (encode '(a a a a b c c a a d e e e e))
+;; ((4 A) (1 B) (2 C) (2 A) (1 D)(4 E))
+
+
+;; approach
+;; for each element in consec, perform count and add to new result head, count
+
+(defn run-length-encoding [xs]
+  (let [consec (pack-consecutives xs)]
+    (loop [[head & tail :as all] consec
+           result []]
+      (if (empty? all)
+        result
+        (recur tail (conj result (conj (conj [] (count head)) (first head))))))))
+
+(run-length-encoding '(a a a a b c c a a d e e e e))
