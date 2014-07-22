@@ -123,4 +123,20 @@
 ;; * (pack '(a a a a b c c a a d e e e e))
 ;; ((A A A A) (B) (C C) (A A) (D) (E E E E))
 
+;; add element to sublist,
+;; if head is not same as (last tail) add it to sub-list and conj it to result
+;;
+(defn pack-consecutives [xs]
+  (loop [[head & tail :as all] xs
+         result []
+         sublist []]
+    (if (empty? all)
+      result
+      (do
+        (if (= head (first tail))
+          (do (println sublist)
+            (recur tail result (conj sublist head)))
+          (recur tail (conj result (conj sublist head)) []))
+
+          ))))
 
