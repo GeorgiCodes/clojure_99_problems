@@ -161,3 +161,84 @@
         (recur tail (conj result (conj (conj [] (count head)) (first head))))))))
 
 (run-length-encoding '(a a a a b c c a a d e e e e))
+
+;; problem 11
+;; (*) Modified run-length encoding.
+;; Modify the result of problem P10 in such a way that if an element has no duplicates it is simply copied into the result list.
+;; Only elements with duplicates are transferred as (N E) lists.
+
+;; Example:
+;; * (encode-modified '(a a a a b c c a a d e e e e))
+;; ((4 A) B (2 C) (2 A) D (4 E))
+
+;; approach
+;;
+
+(defn run-length-encoding-no-dups [xs]
+  (let [consec (run-length-encoding xs)]
+    (loop [[head & tail :as all] consec
+           result []]
+      (if (empty? all)
+        result
+        (do (if (< (first head) 2)
+              (recur tail (conj result (last head)))
+              (recur tail (conj result (conj (conj [] (first head)) (last head))))))))))
+
+(run-length-encoding-no-dups '(a a a a b c c a a d e e e e))
+
+
+;; problem 12
+;; (**) Decode a run-length encoded list.
+;; Given a run-length code list generated as specified in problem P11. Construct its uncompressed version.
+
+;; approach
+;; if head is list, then for loop for (first head) adding (tail head) to result
+;; else add non-list item to result
+
+(defn uncompress-run-length [xs]
+  (loop [[head & tail :as all] xs
+         result []]
+    (if (empty? all)
+      result
+      (do (if (seq? head)
+            (do
+              (println (first head))
+              (recur tail (repeatedly (first head) (conj result (last head)))))
+            (recur tail (conj result head)))))))
+
+(uncompress-run-length ['(5 "a") "b" '(2 "c") '(2 "a") "d" '(4 "e")])
+
+(defn repeat-chars [counter chr]
+  (loop [result []
+         counter counter]
+    (if (= 0 counter)
+      result
+      (recur (conj result chr) (dec counter)))))
+
+;; P13 (**) Run-length encoding of a list (direct solution).
+;; Implement the so-called run-length encoding data compression method directly. I.e. don't explicitly create the sublists containing the duplicates, as in problem P09, but only count them. As in problem P11, simplify the result list by replacing the singleton lists (1 X) by X.
+
+;; Example:
+;; * (encode-direct '(a a a a b c c a a d e e e e))
+;; ((4 A) B (2 C) (2 A) D (4 E))
+
+
+
+;; P14 (*) Duplicate the elements of a list.
+;; Example:
+;; * (dupli  '(a b c c d))
+;; (A A B B C C C C D D)
+
+;; approach
+;; add in element to result
+
+(conj (conj [] 'a) 'a)
+
+(defn duplicate-elements [xs]
+  (loop [[head & tail :as all] xs
+         result []]
+    (if (empty? all)
+      result
+      (recur tail (conj (conj result head) head)))))
+
+(duplicate-elements '(a b c c d))
